@@ -1,7 +1,8 @@
 #!/bin/bash
 # 自动将 MBR/Legacy 的 Debian qcow2 镜像转换为 UEFI 支持版本
 set -e
-
+sudo apt-get update
+sudo apt-get install -y qemu-utils gdisk dosfstools parted wget
 URL="https://github.com/ninjayo/debian13-minimal-for1gdisk/releases/download/v1.0/debian-final.qcow2"
 IMG="debian-final.qcow2"
 UEFI_IMG="debian-uefi.qcow2"
