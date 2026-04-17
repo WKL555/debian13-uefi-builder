@@ -12,6 +12,10 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        
+        # 关键步骤：赋予脚本执行权限
+      - name: Make script executable
+        run: chmod +x build.sh
 
       - name: Run Build Script
         run: sudo ./build.sh
