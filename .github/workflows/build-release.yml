@@ -1,40 +1,33 @@
-name: Build and Release Debian 13 UEFI Image
+name: Build Debian 13 UEFI Image
 
-# 触发条件：手动触发 (也可以改成 push 触发)
 on:
-  workflow_dispatch:
+  workflow_dispatch: # 支持手动触发
 
 jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # 必须具有写入权限以创建 Release
+      contents: write # 必须开启写入权限
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Make Build Script Executable
-        run: chmod +x build.sh
-
-      - name: Run Build Script (Requires Root)
+      - name: Run Build Script
         run: sudo ./build.sh
 
-      - name: Generate Release Tag
-        id: tag
-        run: echo "release_tag=v1.0.${{ github.run_number }}" >> $GITHUB_ENV
-
-      - name: Upload to GitHub Releases
+      - name: Create Release and Upload
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ env.release_tag }}
-          name: "Debian 13 UEFI Minimal Image (${{ env.release_tag }})"
+          tag_name: v1.0.${{ github.run_number }}
+          name: "Debian 13 UEFI Btrfs Networkd"
           body: |
-            ### Debian 13 (Trixie) Minimal x86_64
-            - **Boot Method**: UEFI (GPT + ESP)
-            - **Disk Size**: 1GB (Auto-expands on some reinstall scripts)
-            - **Root Password**: `password`
-            - **Network**: DHCP enabled (eth0, ens3, enp3s0)
-          files: debian13-uefi-1g.raw.gz
+            ### 镜像信息
+            - **OS**: Debian 13 (Trixie)
+            - **FS**: Btrfs (zstd:3)
+            - **Network**: systemd-networkd + resolved
+            - **Password**: `password`
+          # 核心：必须匹配 build.sh 最后的压缩文件名
+          files: debian13-uefi-networkd.raw.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
