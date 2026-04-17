@@ -1,4 +1,4 @@
-name: Build Debian 13 Qcow2 Image
+name: Build Debian 13 UEFI Qcow2 Image
 
 on:
   workflow_dispatch:
@@ -16,8 +16,13 @@ jobs:
       - name: Make script executable
         run: chmod +x build.sh
 
-      - name: Run Build Script
-        run: sudo ./build.sh
+      - name: Run Build Script (with debug output)
+        run: |
+          # 使用 script 命令保留完整输出，避免一些 tty 问题
+          script -e -c "sudo ./build.sh" /dev/null
+
+      - name: List generated files
+        run: ls -lh *.qcow2
 
       - name: Create Release and Upload
         uses: softprops/action-gh-release@v2
@@ -25,12 +30,12 @@ jobs:
           tag_name: v1.0.${{ github.run_number }}
           name: "Debian 13 UEFI Qcow2 Minimal"
           body: |
-            ### 极致精简版 QCOW2 镜像
+            ### 极致精简版 QCOW2 镜像 (UEFI 启动)
             - **OS**: Debian 13 (Trixie) Cloud-Kernel
             - **格式**: qcow2 (内置 zlib 压缩)
             - **文件系统**: Btrfs (zstd:3)
             - **密码**: `password`
-          # 核心：修改为生成的 qcow2 文件名
+            - **启动方式**: UEFI (已安装 GRUB-EFI)
           files: debian-uefi.qcow2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
