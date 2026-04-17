@@ -1,19 +1,18 @@
-name: Build Debian 13 UEFI Image
+name: Build Debian 13 Qcow2 Image
 
 on:
-  workflow_dispatch: # 支持手动触发
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # 必须开启写入权限
+      contents: write
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-        
-        # 关键步骤：赋予脚本执行权限
+
       - name: Make script executable
         run: chmod +x build.sh
 
@@ -24,14 +23,14 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v1.0.${{ github.run_number }}
-          name: "Debian 13 UEFI Btrfs Networkd"
+          name: "Debian 13 UEFI Qcow2 Minimal"
           body: |
-            ### 镜像信息
-            - **OS**: Debian 13 (Trixie)
-            - **FS**: Btrfs (zstd:3)
-            - **Network**: systemd-networkd + resolved
-            - **Password**: `password`
-          # 核心：必须匹配 build.sh 最后的压缩文件名
-          files: debian13-uefi-networkd.raw.gz
+            ### 极致精简版 QCOW2 镜像
+            - **OS**: Debian 13 (Trixie) Cloud-Kernel
+            - **格式**: qcow2 (内置 zlib 压缩)
+            - **文件系统**: Btrfs (zstd:3)
+            - **密码**: `password`
+          # 核心：修改为生成的 qcow2 文件名
+          files: debian13-minimal.qcow2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
