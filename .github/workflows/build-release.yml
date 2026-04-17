@@ -31,6 +31,6 @@ jobs:
             - **文件系统**: Btrfs (zstd:3)
             - **密码**: `password`
           # 核心：修改为生成的 qcow2 文件名
-          files: debian13-minimal.qcow2
+          files: debian-uefi.qcow2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
